@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name:
+    firstName:
     {
         type: String,
         required: true,
+    },
+    lastName:
+    {
+        type: String,
     },
     email:
     {
@@ -17,20 +21,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    cart:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"productDetails"
+    cart: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "productVariant",
+        required: false
     },
     favorites:
     {
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"product"
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "product",
+        required: false
     },
 
     promoCodes:
     {
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"promoCode"
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "promoCode",
+        required: false
     }
 },
     { timestamps: true, versionKey: false }

@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
     },
     details:{
         type:[mongoose.Schema.Types.ObjectId],
-        ref:'productDetails'
+        ref:'productVariant'
     },
     onSale:
     {
