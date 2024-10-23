@@ -5,18 +5,23 @@ const productSchema = new mongoose.Schema({
     {
         type: String,
         required: true,
+        unique: true,
     },
     price:
     {
-        type:Number,
+        type: Number,
     },
-    details:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:'productVariant'
+    details: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'productVariant'
     },
     onSale:
     {
-        type:Number
+        type: Number
+    },
+    image:
+    {
+        type: String
     }
 },
     { timestamps: true, versionKey: false }

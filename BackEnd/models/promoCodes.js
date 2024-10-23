@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const promoCodeSchema = new mongoose.Schema({
     code:
     {

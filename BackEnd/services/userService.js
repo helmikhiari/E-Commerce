@@ -25,3 +25,16 @@ exports.register = async (firstName, lastName, email, password) => {
     }
 }
 
+exports.getUserbyID=async(id)=>
+{
+    try
+    {   const selections='firstName lastName email cart favorites'
+        const user=await userModel.findById(id).select(selections);
+        return user;
+    }
+    catch(error)
+    {
+        console.log(error);
+    }
+}
+
