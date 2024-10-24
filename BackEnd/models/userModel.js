@@ -38,9 +38,15 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "promoCode",
         required: false
+    },
+    code:
+    {
+        type:String,
     }
 },
     { timestamps: true, versionKey: false }
 );
 
 module.exports = mongoose.model('user', userSchema);
+
+

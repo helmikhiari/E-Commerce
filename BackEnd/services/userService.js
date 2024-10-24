@@ -38,3 +38,32 @@ exports.getUserbyID=async(id)=>
     }
 }
 
+exports.updateUser=async (email,key,value)=>
+{
+    try
+    {
+        const user=await userModel.findOne({email});
+        user[key]=value;
+        await user.save();
+        return true;
+    }
+    catch(error)
+    {
+        console.log(error);
+        return null;
+    }
+}
+
+
+exports.getUserbyProp=async(prop,value)=>
+    {
+        try
+        {   const selections='firstName lastName email cart favorites'
+            const user=await userModel.findById(id).select(selections);
+            return user;
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
+    }
