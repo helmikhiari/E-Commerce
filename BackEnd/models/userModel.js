@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     },
     cart: {
         type: [mongoose.Schema.Types.ObjectId],
-        ref: "productVariant",
+        ref: "userCart",
         required: false
     },
     favorites:

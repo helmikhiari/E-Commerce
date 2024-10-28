@@ -6,5 +6,6 @@ const dtoMiddleware = require('../middlewares/dtoMiddleware');
 const authMiddleware=require('../middlewares/authMiddleware')
 router.post('/register', userDto.userRegisterDTO, dtoMiddleware, userController.register)
 router.get('/getUser',authMiddleware.jwtMiddleware,userController.getUser)
-
+router.post('/addToCart',authMiddleware.jwtMiddleware,userController.addToCart);
+router.post('/toggleProduct',authMiddleware.jwtMiddleware,userController.toggleWishList)
 module.exports = router
