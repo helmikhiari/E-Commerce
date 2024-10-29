@@ -3,7 +3,7 @@ import { some } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleFavProduct } from 'store/reducers/user';
 import { RootState } from 'store';
-import { ProductTypeList } from 'types';
+
 
 const ProductItem = ({ discount, images, id, name, price, currentPrice }: ProductTypeList) => {
   const dispatch = useDispatch();

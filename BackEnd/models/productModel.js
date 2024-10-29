@@ -11,13 +11,15 @@ const productSchema = new mongoose.Schema({
     {
         type: Number,
     },
-    details: {
-        type: [mongoose.Schema.Types.ObjectId],
+    details: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'productVariant'
-    },
+    }
+    ],
     onSale:
     {
-        type: Number
+        type: Number,
+        default:0
     },
     image:
     {

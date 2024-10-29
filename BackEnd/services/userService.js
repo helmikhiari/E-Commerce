@@ -3,7 +3,10 @@ const bcrypt = require('bcryptjs');
 const variantModel = require('../models/productVariantsModel')
 const userCartModel = require('../models/userCart');
 const productModel = require('../models/productModel');
-const promoCodesModel=require('../models/promoCodes');
+const promoCodesModel = require('../models/promoCodes');
+const userCart = require('../models/userCart');
+const purchaseModel = require("../models/purchase");
+const productPurchasedModel = require("../models/productPurchased")
 exports.checkUserExists = async (email) => {
     try {
         const user = await userModel.findOne({ email: email })
@@ -32,7 +35,7 @@ exports.register = async (firstName, lastName, email, password) => {
 exports.getUserbyID = async (id) => {
     try {
         const selections = 'firstName lastName email cart favorites'
-        const user = await userModel.findById(id).select(selections);
+        const user = await userModel.findById(id).select(selections).populate('cart');
         return user;
     }
     catch (error) {
@@ -69,7 +72,7 @@ exports.getUserbyProp = async (prop, value) => {
 exports.addToCart = async (variantID, quantity, userID) => {
     try {
         const user = await userModel.findById(userID);
-        // console.log(user)
+      
         const variant = await variantModel.findById(variantID);
         const existingSubCart = await userCartModel.findOne({ userID, variant });
         if (existingSubCart) {
@@ -90,22 +93,19 @@ exports.addToCart = async (variantID, quantity, userID) => {
 }
 
 
-exports.toggleWishList=async(userID,productID)=>
-{
+exports.toggleWishList = async (userID, productID) => {
     try {
-        const user=await userModel.findById(userID);
-        const foundProduct=user.favorites.findIndex((product)=>product._id==productID)
-        let msg="";
-        if (foundProduct!=-1)
-        {
-            user.favorites.splice(foundProduct,1);
-            msg="Removed from"
+        const user = await userModel.findById(userID);
+        const foundProduct = user.favorites.findIndex((product) => product._id == productID)
+        let msg = "";
+        if (foundProduct != -1) {
+            user.favorites.splice(foundProduct, 1);
+            msg = "Removed from"
         }
-        else 
-        {
-            const product=await productModel.findById(productID);
+        else {
+            const product = await productModel.findById(productID);
             user.favorites.push(product);
-            msg="Added to"
+            msg = "Added to"
         }
         await user.save();
         return msg
@@ -117,20 +117,60 @@ exports.toggleWishList=async(userID,productID)=>
 }
 
 
-exports.purchase=async(userID,promoCode)=>
-{
+exports.purchase = async (userID, promoCode) => {
     try {
         let promo;
-        if (promoCode)
-        {
-            promo=await promoCodesModel.findOne({code:promoCode});
+        if (promoCode) {
+            promo = await promoCodesModel.findOne({ code: promoCode });
         }
-        const user=await userModel.findById('userID');
-        for (userCart of user.cart)
-        {
-            
+        let total_price = 0;
+        const commande = new purchaseModel({ products: [] })
+        const user = await userModel.findById(userID);
+        for (const userCartID of user.cart) {
+            const newProductPurchased = {};
+            const data = await userCart.findById(userCartID).populate({
+                path: "variant",
+                select: "productID",
+                populate: {
+                    path: "productID",
+                    select: "price onSale"
+                }
+            })
+            let onsale = data.variant.productID.onSale;
+            // console.log(data);
+            let price = data.variant.productID.price * (1 - onsale);
+            total_price += price * data.quantity;
+            newProductPurchased.quantity = data.quantity;
+            newProductPurchased.variantID = data.variant;
+            newProductPurchased.purchaseID = commande;
+            const saveLittlePurchase = new productPurchasedModel(newProductPurchased);
+            await saveLittlePurchase.save();
+            commande.products.push(saveLittlePurchase);
         }
+        if (promo) {
+            total_price *= promo.percent;
+            promo.usedBy = user;
+            promo.used = true;
+            await promo.save();
+            commande.promoCode = promo;
+        }
+
+        commande.total_price = total_price;
+        commande.userID = user
+        await commande.save();
+        while (user.cart.length > 0)
+            user.cart.pop();
+
+        user.purchases.push(commande)
+        await user.save();
+
+
+        while (await userCartModel.findOneAndDelete({ user: user._id }))
+            continue;
+
+        return true;
+
     } catch (error) {
-        
+        console.log(error)
     }
 }

@@ -1,4 +1,5 @@
 const productService = require('../services/productService')
+;
 exports.getProducts = async (req, res) => {
     try {
         const products = await productService.getProducts();
@@ -9,10 +10,12 @@ exports.getProducts = async (req, res) => {
     }
 }
 
-exports.addProduct = async (req, res) => {
+exports.addProduct =async (req, res) => {
     try {
         const { name, price } = req.body;
-        const added = await productService.addProduct(name, price);
+        const img=req.file;
+      
+        const added = await productService.addProduct(name,price,img);
         if (!added)
             return res.status(409).json({ message: "product add failed " });
         return res.status(201).json({ message: "product added" })

@@ -8,4 +8,5 @@ router.post('/register', userDto.userRegisterDTO, dtoMiddleware, userController.
 router.get('/getUser',authMiddleware.jwtMiddleware,userController.getUser)
 router.post('/addToCart',authMiddleware.jwtMiddleware,userController.addToCart);
 router.post('/toggleProduct',authMiddleware.jwtMiddleware,userController.toggleWishList)
+router.post('/purchase',authMiddleware.jwtMiddleware,userController.purchase)
 module.exports = router

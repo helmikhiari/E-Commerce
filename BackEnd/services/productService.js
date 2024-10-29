@@ -10,9 +10,9 @@ exports.getProducts = async () => {
     }
 }
 
-exports.addProduct = async (name, price) => {
+exports.addProduct = async (name, price,img) => {
     try {
-        const newProduct = new productModel({ name, price });
+        const newProduct = new productModel({ name, price,image:`http://localhost:5000/uploads/${img.filename}` });
         await newProduct.save();
         return true;
     }

@@ -6,10 +6,10 @@ const purchaseSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"user"
     },
-    products:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"productVariant"
-    },
+    products:[
+        {type:mongoose.Schema.Types.ObjectId,
+        ref:"productPurchase"}
+    ],
     total_price:
     {
         type:Number
