@@ -1,53 +1,42 @@
-const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
-const { default: axios } = require("axios");
+const { createSlice } = require("@reduxjs/toolkit");
 
 
-const initialState={
-    firstName:null,
-    lastName:null,
-    email:null,
-    isAuthenticated:false,
-    loading:true,
-    error:{}
+
+const initialState = {
+    firstName: null,
+    lastName: null,
+    email: null,
+    isAuthenticated: null,
 }
+const userSlice = createSlice({
 
-const login=createAsyncThunk('user/login',async(credentials)=>{
-    try
-    {   
-        const response=await axios.post(process.env.API_BASE+"user/login",credentials);
-        return response;
-    }
-    catch(error)
-    {
-
-    }
-})
-
-const userSlice=createSlice({
-
-    name:"user",
+    name: "user",
     initialState,
-    extraReducers:(builder)=>
-    {
-        builder
-        .addCase(login.fulfilled,(state,action)=>
-        {   state.loading=false;
-            if (action.payload.status==201)
-            {
-                state.isAuthenticated=true;
-                localStorage.setItem('token',action.payload.data.token)
-            }
-            else 
-            {
-                state.error=action.payload.data.message;
-            }
-        })
-        .addCase(login.rejected,(state,action)=>
-        {
-            state.error={message:"Login Failed"};
+    reducers: {
+        setIsAuth: (state, action) => {
+            state.isAuthenticated = action.payload;
+        },
+        setData: (state, action) => {
+            state.firstName = action.payload.firstName;
+            state.lastName = action.payload.lastName
+            state.email = action.payload.email;
         }
-        )
+        ,
+        logOut: (state) => {
+            state.isAuthenticated = false;
+            state.firstName = null;
+            state.lastName = null
+            state.email = null;
+            localStorage.removeItem('token');
+        }
     }
 
-
 })
+
+export const { setIsAuth, setData, logOut } = userSlice.actions;
+
+export default userSlice.reducer
+
+
+
+

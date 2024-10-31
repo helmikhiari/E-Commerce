@@ -68,3 +68,14 @@ exports.addVariant=async (productID,color,size,quantity)=>
         console.log(error);
     }
 }
+
+
+exports.getVariantsOfProduct=async(productID)=>
+{
+    try {
+        const variants=await productModel.findById(productID).populate({path:"details",select:'color quantity size'});
+        return variants.details;
+    } catch (error) {
+        return false;
+    }
+}
