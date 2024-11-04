@@ -9,7 +9,7 @@ const userCartSchema=new mongoose.Schema({
     quantity:
     {
         type:Number
-    },
+    },  
     userID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",

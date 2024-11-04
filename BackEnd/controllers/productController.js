@@ -12,10 +12,10 @@ exports.getProducts = async (req, res) => {
 
 exports.addProduct = async (req, res) => {
     try {
-        const { name, price } = req.body;
+        const { name, price, onSale } = req.body;
         const img = req.file;
 
-        const added = await productService.addProduct(name, price, img);
+        const added = await productService.addProduct(name, price, img,onSale);
         if (!added)
             return res.status(409).json({ message: "product add failed " });
         return res.status(201).json({ message: "product added" })
@@ -43,14 +43,14 @@ exports.addVariant = async (req, res) => {
 }
 
 exports.getProduct = async (req, res) => {
-    const {id}=req.params;
+    const { id } = req.params;
     try {
         if (!productService.checkProduct(id)) {
             return res.status(404).json({ message: "Product Not Found" });
         }
         const products = await productService.getVariantsOfProduct(id)
         return res.status(200).send(products);
-    }   
+    }
     catch (error) {
         console.log("error" + error);
     }

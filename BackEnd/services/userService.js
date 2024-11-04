@@ -92,6 +92,28 @@ exports.addToCart = async (variantID, quantity, userID) => {
     }
 }
 
+exports.deleteFromCart = async (variantID, quantity, userID) => {
+    try {
+        const user = await userModel.findById(userID);
+      
+        const variant = await variantModel.findById(variantID);
+        const existingSubCart = await userCartModel.findOne({ userID, variant });
+        if (existingSubCart) {
+            existingSubCart.quantity += quantity;
+            await existingSubCart.save();
+            return true;
+        }
+        const newSubCart = new userCartModel({ userID: user, variant, quantity });
+        await newSubCart.save();
+        user.cart.push(newSubCart);
+        await user.save();
+        return true;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
 
 exports.toggleWishList = async (userID, productID) => {
     try {

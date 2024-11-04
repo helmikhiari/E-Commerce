@@ -6,7 +6,7 @@ async function Connect_DB() {
     }
     catch (error) {
         console.log("error: " + error)
-    }
+    } 
 }
 module.exports = { Connect_DB };
 

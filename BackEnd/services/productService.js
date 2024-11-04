@@ -10,9 +10,9 @@ exports.getProducts = async () => {
     }
 }
 
-exports.addProduct = async (name, price,img) => {
+exports.addProduct = async (name, price, img, onSale) => {
     try {
-        const newProduct = new productModel({ name, price,image:`http://localhost:5000/uploads/${img.filename}` });
+        const newProduct = new productModel({ name, price, image: `http://localhost:5000/uploads/${img.filename}`, onSale });
         await newProduct.save();
         return true;
     }
@@ -42,10 +42,9 @@ exports.checkStock = async (quantity, variantID) => {
     }
 }
 
-exports.checkProduct=async(productID)=>
-{
+exports.checkProduct = async (productID) => {
     try {
-        const product=await productModel.findById(productID);
+        const product = await productModel.findById(productID);
         return !!product;
     } catch (error) {
         console.log(error);
@@ -53,16 +52,21 @@ exports.checkProduct=async(productID)=>
 }
 
 
-exports.addVariant=async (productID,color,size,quantity)=>
-{
+exports.addVariant = async (productID, color, size, quantity) => {
     try {
-        const product=await productModel.findById(productID);
-        const newVariant=new variantModel({productID,color,size,quantity});
+        const product = await productModel.findById(productID);
+        const existVariant = await variantModel.findOne({ productID, size, color })
+        if (existVariant) {
+            existVariant.quantity += quantity;
+            await existVariant.save()
+            return true;
+        }
+        const newVariant = new variantModel({ productID, color, size, quantity });
         await newVariant.save();
         product.details.push(newVariant);
         await product.save();
         return true;
-    } 
+    }
     catch (error) {
         return false;
         console.log(error);
@@ -70,10 +74,9 @@ exports.addVariant=async (productID,color,size,quantity)=>
 }
 
 
-exports.getVariantsOfProduct=async(productID)=>
-{
+exports.getVariantsOfProduct = async (productID) => {
     try {
-        const variants=await productModel.findById(productID).populate({path:"details",select:'color quantity size'});
+        const variants = await productModel.findById(productID).populate({ path: "details", select: 'color quantity size' });
         return variants.details;
     } catch (error) {
         return false;

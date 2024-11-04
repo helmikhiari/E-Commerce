@@ -20,6 +20,7 @@ const ProductItem = ({ image, id, name, price, currentPrice, discount }) => {
   const toggleFav = async () => {
     if (isAuthenticated) {
       const response = await toggleProduct(id);
+      console.log(response);
       if (response) {
         dipatch(toggleFavourite(id));
       }
@@ -35,6 +36,7 @@ const ProductItem = ({ image, id, name, price, currentPrice, discount }) => {
       <div className="product__image">
         <button
           type="button"
+          onClick={toggleFav}
           className={`btn-heart ${isFavourite ? "btn-heart--active" : ""}`}
         >
           <i className="icon-heart"></i>

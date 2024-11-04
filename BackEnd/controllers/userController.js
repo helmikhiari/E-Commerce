@@ -55,7 +55,7 @@ exports.addToCart = async (req, res) => {
 
 
 exports.toggleWishList = async (req, res) => {
-    try {
+    try {   
         const { productID } = req.body
         if (! await productService.checkProduct(productID)) {
             return res.status(404).json({ message: "product not found" });
@@ -64,36 +64,31 @@ exports.toggleWishList = async (req, res) => {
         if (!toggled) {
             return res.status(400).json({ message: "Toggle Failed" });
         }
-        return res.status(201).json({ message: `Product ${toggled}  wishlist Successffully` });
+        return res.status(204).json({ message: `Product ${toggled}  wishlist Successffully` });
     } catch (error) {
 
     }
 }
 
-exports.purchase=async(req,res)=>
-{
+exports.purchase = async (req, res) => {
     try {
-        const {promoCode}=req.body;
-        if (promoCode)
-        {
-            const exist=await userService.checkPromoCode(promoCode);
-            if (exist==1)
-            {
-                return res.status(404).json({message:"Invalid PromoCode"})
+        const { promoCode } = req.body;
+        if (promoCode) {
+            const exist = await userService.checkPromoCode(promoCode);
+            if (exist == 1) {
+                return res.status(404).json({ message: "Invalid PromoCode" })
             }
-            if (exist==2)
-            {
-                return res.status(409).json({message:"PromoCode already used"});
+            if (exist == 2) {
+                return res.status(409).json({ message: "PromoCode already used" });
             }
         }
-        const purchased=await userService.purchase(req.userID,promoCode);
-        if (!purchased)
-        {
-            return res.status(400).json({message:"Purchase failed"});
+        const purchased = await userService.purchase(req.userID, promoCode);
+        if (!purchased) {
+            return res.status(400).json({ message: "Purchase failed" });
         }
-        return res.status(201).json({message:"Purchased Successfully"});
-    } 
+        return res.status(201).json({ message: "Purchased Successfully" });
+    }
     catch (error) {
-        
+
     }
 }
