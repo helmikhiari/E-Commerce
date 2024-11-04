@@ -1,15 +1,35 @@
 import Link from "next/link";
 import { some } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { toggleProduct } from "./../../APIS/wishList";
+import { toggleFavourite } from "reducers/wishListSlice";
+const ProductItem = ({ image, id, name, price, currentPrice, discount }) => {
+  const [isFavourite, setIsFavourite] = useState(false);
+  const { wishList } = useSelector((state) => state.wishList);
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const dipatch = useDispatch();
+  useEffect(() => {
+    if (id && wishList) {
+      let exist = wishList.includes(id);
 
-const ProductItem = ({
-  image,
-  id,
-  name,
-  price,
-  currentPrice,
-  isFavourite,
-  discount,
-}) => {
+      setIsFavourite(exist);
+    }
+  }, [wishList, id]);
+
+  const toggleFav = async () => {
+    if (isAuthenticated) {
+      const response = await toggleProduct(id);
+      if (response) {
+        dipatch(toggleFavourite(id));
+      }
+    }
+    // else
+    // {
+
+    // }
+  };
+
   return (
     <div className="product-item">
       <div className="product__image">
@@ -23,7 +43,7 @@ const ProductItem = ({
         <Link href={`/product/${id}`}>
           <a>
             <img src={image || ""} alt="product" />
-            {discount && (
+            {!!discount && (
               <span className="product__discount">{discount * 100}%</span>
             )}
           </a>
@@ -39,7 +59,7 @@ const ProductItem = ({
         >
           <h4>${currentPrice - currentPrice * discount}</h4>
 
-          {discount && <span>${currentPrice}</span>}
+          {!!discount && <span>${currentPrice}</span>}
         </div>
       </div>
     </div>

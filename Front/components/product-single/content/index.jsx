@@ -6,69 +6,69 @@ import { some } from "lodash";
 import Product from "./../../../pages/product/[pid]";
 import { setProducts } from "reducers/productSlice";
 
-const Content = ({ products, id }) => {
+const Content = ({ variants, id }) => {
   const dispatch = useDispatch();
   const pr = useSelector((state) => state.products.products);
-  const [product, setProduct] = useState(() => pr.filter((pr) => pr._id == id));
+  const [product, setProduct] = useState(() => pr.find((pr) => pr._id == id));
 
-  const [count, setCount] = useState(1);
-  const [color, setColor] = useState("");
-  const [itemSize, setItemSize] = useState("");
   const [productsColors, setProductColors] = useState([]);
-  const [productsSizes, setProductSizes] = useState(() =>
-    products?.map((item) => item.size)
-  );
-  const onColorSet = (e) => setColor(e);
-  const onSelectChange = (e) => setItemSize(e.target.value);
+  const [productsSizes, setProductSizes] = useState({});
+  const [activeColor, setActiveColor] = useState("");
+  const [activeSize, setActiveSize] = useState("");
+  const [activeQuantity,setActiveQuantity]=useState(1)
+  const [stock,setStock]=useState(1);
+  const onColorSet = (e) => setActiveColor(e);
+  const onSelectChange = (e) => setActiveSize(e.target.value);
 
-  const { favProducts } = useSelector((state) => state.user);
-  const isFavourite = some(
-    favProducts,
-    (productId) => productId === product[0].id
-  );
+  useEffect(() => {
+    if (variants) {
+      let colors = variants.map((variant) => variant.color);
 
-  // const addToCart = () => {
-  //   const productToSave = {
-  //     id: product.id,
-  //     name: product.name,
-  //     thumb: product.images ? product.images[0] : '',
-  //     price: product.currentPrice,
-  //     count: count,
-  //     color: color,
-  //     size: itemSize
-  //   }
+      let uniqueColors = [...new Set(colors)];
+      setProductColors(uniqueColors);
+      let sizes = {};
+      variants.forEach((variant) => {
+        if (!sizes[variant.color]) sizes[variant.color] = [];
+        sizes[variant.color].push(variant.size);
+      });
 
-  // const productStore = {
-  //   count,
-  //   product: productToSave
-  // }
+      setProductSizes(sizes);
+    }
+  }, [variants]);
 
   const toggleFav = () => {};
 
-  useEffect(() => {
-    if (products.length > 0) {
-      const x = products?.map((item) => item.color);
-      console.log(x);
-      setProducts(x);
-    }
-  }, [products]);
+useEffect(()=>{
+  setActiveSize('');
+},[activeColor])
+
+useEffect(()=>{
+  if (activeColor&&activeSize)
+  {
+    let variant=variants?.find((v)=>v.color==activeColor&&v.size==activeSize);
+    console.log(variant);
+    setStock(variant.quantity);
+  }
+  setActiveQuantity(1)
+},
+[activeColor,activeSize])
 
   return (
     <section className="product-content">
       <div className="product-content__intro">
         <h5 className="product__id">
           Product ID:<br></br>
-          {product[0]?._id}
+          {product?._id}
         </h5>
         <span className="product-on-sale">Sale</span>
-        <h2 className="product__name">{product[0]?.name}</h2>
+        <h2 className="product__name">{product?.name}</h2>
 
-        {/* <div className="product__prices">
-          <h4>${ product.currentPrice }</h4>
-          {product.discount &&
-            <span>${ product.price }</span>
+        <div className="product__prices">
+          <h4>${ product?.price-(product?.price*product?.onSale) }</h4>
+          {product?.onSale &&
+            <span>${ product?.price }</span>
           }
-        </div> */}
+        </div>
       </div>
 
       <div className="product-content__filters">
@@ -77,11 +77,10 @@ const Content = ({ products, id }) => {
           <div className="checkbox-color-wrapper">
             {productsColors.map((color) => (
               <CheckboxColor
-                key={type.id}
                 type={"radio"}
                 name="product-color"
                 color={color}
-                valueName={type.label}
+                valueName={color}
                 onChange={onColorSet}
               />
             ))}
@@ -94,9 +93,11 @@ const Content = ({ products, id }) => {
           <div className="checkbox-color-wrapper">
             <div className="select-wrapper">
               <select onChange={onSelectChange}>
-                <option>Choose size</option>
-                {productsSizes.map((type) => (
-                  <option value={type.label}>{type.label}</option>
+                <option selected disabled>
+                  Choose size
+                </option>
+                {productsSizes[activeColor]?.map((size) => (
+                  <option value={size}>{size}</option>
                 ))}
               </select>
             </div>
@@ -108,16 +109,18 @@ const Content = ({ products, id }) => {
             <div className="quantity-button">
               <button
                 type="button"
-                onClick={() => setCount(count - 1)}
+                onClick={() => setActiveQuantity(activeQuantity - 1)}
                 className="quantity-button__btn"
+                disabled={! (activeQuantity>1)}
               >
                 -
               </button>
-              <span>{count}</span>
+              <span>{activeQuantity}</span>
               <button
                 type="button"
-                onClick={() => setCount(count + 1)}
+                onClick={() => setActiveQuantity(activeQuantity + 1)}
                 className="quantity-button__btn"
+                disabled={activeQuantity>=stock}
               >
                 +
               </button>
@@ -130,13 +133,13 @@ const Content = ({ products, id }) => {
             >
               Add to cart
             </button>
-            <button
+            {/* <button
               type="button"
               onClick={toggleFav}
               className={`btn-heart ${isFavourite ? "btn-heart--active" : ""}`}
             >
               <i className="icon-heart"></i>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

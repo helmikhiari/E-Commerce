@@ -24,7 +24,7 @@ const ProductsContent = () => {
               price={item.price}
               color={item.color}
               currentPrice={item.price}
-              discount={0.5}
+              discount={item.onSale}
               key={item.id}
               image={item.image} 
             />

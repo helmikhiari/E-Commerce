@@ -5,6 +5,7 @@ import { getUser } from "APIS/user";
 import { setData, setIsAuth } from "reducers/userSlice";
 import {getProducts} from '../APIS/product'
 import { setProducts } from "reducers/productSlice";
+import { setWishList } from "reducers/wishListSlice";
 export default function Initializer() {
     const dispatch = useDispatch();
 
@@ -18,6 +19,7 @@ export default function Initializer() {
                     lastName: response.lastName,
                 }));
                 dispatch(setIsAuth(true));
+                dispatch(setWishList(response.favorites));
             } else {
                 localStorage.removeItem("token");
                 dispatch(setIsAuth(false));

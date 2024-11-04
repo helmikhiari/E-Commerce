@@ -3,26 +3,26 @@ import Footer from "../../components/footer";
 import Layout from "../../layouts/Main";
 import Breadcrumb from "../../components/breadcrumb";
 import ProductsFeatured from "../../components/products-featured";
-import Gallery from "../../components/product-single/gallery";
+
 import Content from "../../components/product-single/content";
 import Description from "../../components/product-single/description";
 import Reviews from "../../components/product-single/reviews";
 import { useRouter } from "next/router";
 import { getVariants } from "APIS/product";
+import Gallery from './../../components/product-single/gallery/index';
 
-const Product = ({ product }) => {
+const Product = ({}) => {
   const router = useRouter();
   const { pid } = router.query;
-  const [products, setProducts] = useState([]);
+  const [variants, setVariants] = useState([]);
 
   const fetchVariants = async () => {
-    const variants = await getVariants(pid);
-    setProducts(variants);
+    const variant = await getVariants(pid);
+    setVariants(variant);
   };
-
   useEffect(() => {
     fetchVariants();
-  }, []);
+  }, [pid]);
 
   return (
     <Layout>
@@ -31,8 +31,8 @@ const Product = ({ product }) => {
       <section className="product-single">
         <div className="container">
           <div className="product-single__content">
-            {/* <Gallery images={product.image} /> */}
-            <Content products={products} id={pid} />
+            <Gallery id={pid} />
+            <Content variants={variants} id={pid} />
           </div>
 
           <div className="product-single__info">

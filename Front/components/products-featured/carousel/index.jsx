@@ -1,6 +1,7 @@
 // import Swiper core and required components
 import { Swiper, SwiperSlide } from "swiper/react";
 import ProductItem from "components/product-item";
+import { useSelector } from "react-redux";
 
 let slidesPerView = 1.3;
 let centeredSlides = true;
@@ -18,7 +19,9 @@ if (process.browser) {
   }
 }
 
-const ProductsCarousel = ({ products }) => {
+const ProductsCarousel = () => {
+  const {products}=useSelector(state=>state.products);
+  
   if (!products) return <div>Loading</div>;
 
   return (
@@ -32,17 +35,17 @@ const ProductsCarousel = ({ products }) => {
         className="swiper-wrapper"
       >
         {products.map((item) => {
-          // item.onSale = 0.5;
+         
           return (
-            <SwiperSlide key={item.id}>
+            <SwiperSlide key={item._id}>
               <ProductItem
-                id={item.id}
+                id={item._id}
                 name={item.name}
                 price={item.price}
                 color={item.color}
-                discount={0.5}
-                currentPrice={item.price}
-                key={item.id}
+                discount={item.onSale}
+                currentPrice={(item.price-(item.price*item.onSale))}
+                key={item._id}
                 image={item.image}
               />
             </SwiperSlide>
