@@ -35,7 +35,7 @@ exports.getUser = async (req, res) => {
 exports.addToCart = async (req, res) => {
     try {
         const { variantID, quantity } = req.body;
-
+        
         if (! await productService.checkVariant(variantID)) {
             return res.status(400).json({ message: "Invalid Variant ID" });
         }
@@ -45,7 +45,7 @@ exports.addToCart = async (req, res) => {
         const added = await userService.addToCart(variantID, quantity, req.userID)
         if (!added)
             return res.status(400).json({ message: "Error While adding to cart" })
-        return res.status(201).json({ message: "Added to cart successfully" });
+        return res.status(204).json({ message: "Added to cart successfully" });
     }
     catch (error) {
         console.log(error);
@@ -55,7 +55,7 @@ exports.addToCart = async (req, res) => {
 
 
 exports.toggleWishList = async (req, res) => {
-    try {   
+    try {
         const { productID } = req.body
         if (! await productService.checkProduct(productID)) {
             return res.status(404).json({ message: "product not found" });

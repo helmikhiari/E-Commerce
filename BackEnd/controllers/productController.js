@@ -10,6 +10,18 @@ exports.getProducts = async (req, res) => {
     }
 }
 
+exports.searchProducts = async (req, res) => {
+    try {
+        const {name}=req.params;
+        
+        const products = await productService.searchProducts(name);
+        return res.status(200).send(products);
+    }
+    catch (error) {
+        console.log("controller error : " + error);
+    }
+}
+
 exports.addProduct = async (req, res) => {
     try {
         const { name, price, onSale } = req.body;

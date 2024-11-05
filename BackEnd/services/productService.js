@@ -10,6 +10,19 @@ exports.getProducts = async () => {
     }
 }
 
+
+exports.searchProducts = async (name) => {
+    try {
+        
+        const products = await productModel.find();
+        let filtered = products.filter(p => p.name.toLowerCase().includes(name.toLowerCase()))
+        return filtered;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
 exports.addProduct = async (name, price, img, onSale) => {
     try {
         const newProduct = new productModel({ name, price, image: `http://localhost:5000/uploads/${img.filename}`, onSale });

@@ -1,17 +1,32 @@
+import { useDispatch, useSelector } from "react-redux";
 import CheckoutStatus from "../checkout-status";
-import Item from "./item";
+import Item from "./item/index";
+import { useState, useEffect } from "react";
+import { setPrice } from "reducers/cartSlice";
+import { useRouter } from "next/router";
 
 const ShoppingCart = () => {
-  const cartItems = [];
+  const { cart } = useSelector((state) => state.cart);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const disaptch = useDispatch();
+  const router=useRouter()
+  const saveTotalPrice = () => disaptch(setPrice(totalPrice));
 
-  const priceTotal = () => {
-    let totalPrice = 0;
-    if (cartItems.length > 0) {
-      cartItems.map((item) => (totalPrice += item.price * item.count));
+  const handleClick=()=>
+  {
+    saveTotalPrice();
+    router.push("/cart/checkout");
+  }
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      let s = cart.reduce(
+        (acc, p) => p.quantity * p.variant.productID.price + acc,
+        0
+      );
+      setTotalPrice(s);
     }
-
-    return totalPrice;
-  };
+  }, [cart]);
 
   return (
     <section className="cart">
@@ -22,7 +37,7 @@ const ShoppingCart = () => {
         </div>
 
         <div className="cart-list">
-          {cartItems.length > 0 && (
+          {cart.length > 0 && (
             <table>
               <tbody>
                 <tr>
@@ -34,23 +49,24 @@ const ShoppingCart = () => {
                   <th></th>
                 </tr>
 
-                {cartItems.map((item) => (
+                {cart.map((item) => (
                   <Item
-                    key={item.id}
-                    id={item.id}
-                    thumb={item.thumb}
-                    name={item.name}
-                    color={item.color}
-                    price={item.price}
-                    size={item.size}
-                    count={item.count}
+                    key={item._id}
+                    id={item._id}
+                    thumb={item.variant.productID.image}
+                    name={item.variant.productID.name}
+                    color={item.variant.color}
+                    price={item.variant.productID.price}
+                    size={item.variant.size}
+                    stock={item.variant.quantity}
+                    qte={item.quantity}
                   />
                 ))}
               </tbody>
             </table>
           )}
 
-          {cartItems.length === 0 && <p>Nothing in the cart</p>}
+          {cart.length === 0 && <p>Nothing in the cart</p>}
         </div>
 
         <div className="cart-actions">
@@ -65,11 +81,13 @@ const ShoppingCart = () => {
 
           <div className="cart-actions__items-wrapper">
             <p className="cart-actions__total">
-              Total cost <strong>${priceTotal().toFixed(2)}</strong>
+              Total cost <strong>${totalPrice}</strong>
             </p>
-            <a href="/cart/checkout" className="btn btn--rounded btn--yellow">
-              Checkout
-            </a>
+            <button className="btn btn--rounded btn--yellow" onClick={handleClick}>
+              
+                Checkout
+             
+              </button>
           </div>
         </div>
       </div>

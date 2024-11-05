@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useOnClickOutside from 'use-onclickoutside';
 import Logo from '../../assets/icons/logo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import DropDown from './../dropdown/index';
-
+import {searchProducts,getProducts} from "./../../APIS/product"
+import { setProducts } from 'reducers/productSlice';
 
 
 const Header = ({ isErrorPage }) => {
@@ -57,8 +58,25 @@ const Header = ({ isErrorPage }) => {
 
 
 const {firstName,lastName,isAuthenticated}=useSelector((state)=>state.user);
+const [search,setSearch]=useState("");
+const dispatch=useDispatch();
+const handleSearchChange=(e)=>setSearch(e.target.value);
 
-
+const handleSearchProducts=async(e)=>
+{ 
+  // e.preventDefault();
+  let res;
+  if (e.target.value)
+  {
+   res=await searchProducts(e.target.value)
+  }
+  else
+  {
+    res=await getProducts();
+  }
+  if (res)
+    dispatch(setProducts(res));
+}
 
 
 
@@ -79,9 +97,9 @@ const {firstName,lastName,isAuthenticated}=useSelector((state)=>state.user);
 
         <div className="site-header__actions">
           <button ref={searchRef} className={`search-form-wrapper ${searchOpen ? 'search-form--active' : ''}`}>
-            <form className={`search-form`}>
+            <form className={`search-form`} >
               <i className="icon-cancel" onClick={() => setSearchOpen(!searchOpen)}></i>
-              <input type="text" name="search" placeholder="Enter the product you are looking for" />
+              <input type="text" name="search" placeholder="Enter the product you are looking for"  onChange={handleSearchProducts} />
             </form>  
             <i onClick={() => setSearchOpen(!searchOpen)}  className="icon-search"></i>
           </button>

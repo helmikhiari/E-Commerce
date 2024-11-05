@@ -1,20 +1,28 @@
 import Layout from '../../layouts/Main';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CheckoutStatus from '../../components/checkout-status';
 import CheckoutItems from '../../components/checkout/items';
-import { RootState } from 'store';
+import { purchase } from 'APIS/user';
+import { setCart,setPrice } from 'reducers/cartSlice';
+
 
 const CheckoutPage = () => {
-
-  const priceTotal = useSelector((state) => {
-    const cartItems = state.cart.cartItems;
-    let totalPrice = 0;
-    if(cartItems.length > 0) {
-      cartItems.map(item => totalPrice += item.price * item.count);
-    }
-
-    return totalPrice;
-  })
+  const {totalPrice}=useSelector(state=>state.cart);
+  const dispatch=useDispatch()
+const handlePurchase=async()=>
+{
+  const res=await purchase();
+  if (res)
+  {
+    alert('Payment Done');
+    dispatch(setCart([]));
+    dispatch(setPrice(0));
+  }
+  else
+  {
+    alert("Payment Failed");
+  }
+}
 
   return (
     <Layout>
@@ -27,10 +35,10 @@ const CheckoutPage = () => {
 
           <div className="checkout-content">
             <div className="checkout__col-6">
-              <div className="checkout__btns">
+              {/* <div className="checkout__btns">
                 <button className="btn btn--rounded btn--yellow">Log in</button>
                 <button className="btn btn--rounded btn--border">Sign up</button>
-              </div>
+              </div> */}
 
               <div className="block">
                 <h3 className="block__title">Shipping information</h3>
@@ -138,7 +146,7 @@ const CheckoutPage = () => {
                 
                 <div className="checkout-total">
                   <p>Total cost</p>
-                  <h3>${priceTotal}</h3>
+                  <h3>${totalPrice}</h3>
                 </div>
               </div>
             </div>
@@ -148,7 +156,7 @@ const CheckoutPage = () => {
             <a href="/cart" className="cart__btn-back"><i className="icon-left"></i> Back</a>
             <div className="cart-actions__items-wrapper">
               <button type="button" className="btn btn--rounded btn--border">Continue shopping</button>
-              <button type="button" className="btn btn--rounded btn--yellow">Proceed to payment</button>
+              <button type="button" className="btn btn--rounded btn--yellow" onClick={handlePurchase}>Proceed to payment</button>
             </div>
           </div>
         </div>

@@ -6,12 +6,12 @@ const Gallery = ({ id }) => {
  const {products}=useSelector(state=>state.products);
   const [image,setImage]=useState('');
  useEffect(()=>{
-  if (products)
+  if (products&&id)
   {
     const pr=products.find((pr)=>pr._id==id)
     setImage(pr?.image);
   }
- },[products])
+ },[products,id])
 
   return (
     <section className="product-gallery">

@@ -5,11 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { some } from "lodash";
 import Product from "./../../../pages/product/[pid]";
 import { setProducts } from "reducers/productSlice";
-
+import {addVariantToCart} from "../../../APIS/cart"
+import { getUser } from "APIS/user";
+import { setCart } from "reducers/cartSlice";
 const Content = ({ variants, id }) => {
   const dispatch = useDispatch();
   const pr = useSelector((state) => state.products.products);
-  const [product, setProduct] = useState(() => pr.find((pr) => pr._id == id));
+  const [product, setProduct] = useState();
 
   const [productsColors, setProductColors] = useState([]);
   const [productsSizes, setProductSizes] = useState({});
@@ -19,6 +21,12 @@ const Content = ({ variants, id }) => {
   const [stock,setStock]=useState(1);
   const onColorSet = (e) => setActiveColor(e);
   const onSelectChange = (e) => setActiveSize(e.target.value);
+
+useEffect(()=>{
+ if (id&&pr)
+  { let a=pr.find((p) => p._id == id)
+  setProduct(a);}
+},[id,pr])
 
   useEffect(() => {
     if (variants) {
@@ -52,6 +60,24 @@ useEffect(()=>{
   setActiveQuantity(1)
 },
 [activeColor,activeSize])
+
+const addToCart=async()=>
+{if (activeColor&&activeSize){
+
+
+  const variant=variants?.find((v)=>v.color==activeColor&&v.size==activeSize)
+  const res=await addVariantToCart(variant._id,activeQuantity)
+  console.log(res);
+  if (res)
+  {
+    const response=await getUser();
+    dispatch(setCart(response.cart));
+  
+  }
+}
+else
+alert("SIZE AND COLOR *")
+}
 
   return (
     <section className="product-content">

@@ -90,3 +90,24 @@ export async function resetPassword(tokenPass, newPassword) {
             return { failure: "Link Already Used Or Expired" }
     }
 }
+
+
+export async function purchase(promoCode)
+{
+    try 
+    {   const token=localStorage.getItem('token');
+        const headers = {
+        'Authorization': `Bearer ${token}`
+    }
+        const response=await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/user/purchase`,{promoCode},{headers})
+        if (response.status==201)
+        {
+            return true;
+        }
+
+    } 
+    catch (error) {
+        console.log(error);
+        return false
+    }
+}

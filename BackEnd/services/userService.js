@@ -35,7 +35,7 @@ exports.register = async (firstName, lastName, email, password) => {
 exports.getUserbyID = async (id) => {
     try {
         const selections = 'firstName lastName email cart favorites'
-        const user = await userModel.findById(id).select(selections).populate('cart');
+        const user = await userModel.findById(id).select(selections).populate({ path: "cart", populate: { path: "variant", select: "color size productID quantity", populate: { path: "productID", select: "name price image" } }, select: "quantity variant" });
         return user;
     }
     catch (error) {
@@ -72,9 +72,10 @@ exports.getUserbyProp = async (prop, value) => {
 exports.addToCart = async (variantID, quantity, userID) => {
     try {
         const user = await userModel.findById(userID);
-      
+        console.log(user);
         const variant = await variantModel.findById(variantID);
         const existingSubCart = await userCartModel.findOne({ userID, variant });
+        console.log(existingSubCart)
         if (existingSubCart) {
             existingSubCart.quantity += quantity;
             await existingSubCart.save();
@@ -95,7 +96,7 @@ exports.addToCart = async (variantID, quantity, userID) => {
 exports.deleteFromCart = async (variantID, quantity, userID) => {
     try {
         const user = await userModel.findById(userID);
-      
+
         const variant = await variantModel.findById(variantID);
         const existingSubCart = await userCartModel.findOne({ userID, variant });
         if (existingSubCart) {
@@ -165,6 +166,10 @@ exports.purchase = async (userID, promoCode) => {
             newProductPurchased.quantity = data.quantity;
             newProductPurchased.variantID = data.variant;
             newProductPurchased.purchaseID = commande;
+            const variant = await variantModel.findById(data.variant._id);
+            variant.quantity -= data.quantity;
+            if (variant.quantity == 0)
+                await variantModel.deleteOne({ _id: variant._id });
             const saveLittlePurchase = new productPurchasedModel(newProductPurchased);
             await saveLittlePurchase.save();
             commande.products.push(saveLittlePurchase);
@@ -187,8 +192,10 @@ exports.purchase = async (userID, promoCode) => {
         await user.save();
 
 
-        while (await userCartModel.findOneAndDelete({ user: user._id }))
+        while (await userCartModel.findOneAndDelete({ userID: user._id }))
             continue;
+
+
 
         return true;
 

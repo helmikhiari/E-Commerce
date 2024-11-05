@@ -23,7 +23,7 @@ const ProductsContent = () => {
               name={item.name}
               price={item.price}
               color={item.color}
-              currentPrice={item.price}
+              currentPrice={(item.price-(item.price*item.onSale))}
               discount={item.onSale}
               key={item.id}
               image={item.image} 

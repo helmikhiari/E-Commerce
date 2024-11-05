@@ -6,6 +6,7 @@ import { setData, setIsAuth } from "reducers/userSlice";
 import {getProducts} from '../APIS/product'
 import { setProducts } from "reducers/productSlice";
 import { setWishList } from "reducers/wishListSlice";
+import { setCart } from "reducers/cartSlice";
 export default function Initializer() {
     const dispatch = useDispatch();
 
@@ -20,6 +21,7 @@ export default function Initializer() {
                 }));
                 dispatch(setIsAuth(true));
                 dispatch(setWishList(response.favorites));
+                dispatch(setCart(response.cart))
             } else {
                 localStorage.removeItem("token");
                 dispatch(setIsAuth(false));

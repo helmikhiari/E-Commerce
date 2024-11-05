@@ -1,23 +1,24 @@
 import { useSelector } from 'react-redux';
 
 const CheckoutItems = () => {
-  const { cartItems } = useSelector(state => state.cart);
+  const {cart}=useSelector(state=>state.cart);
+
 
   return (
     <ul className="checkout-items">
-      {cartItems.map(item => (
+      {cart.map(item => (
         <li className="checkout-item">
           <div className="checkout-item__content">
             <div className="checkout-item__img">
-              <img src={item.thumb} />
+              <img src={item.variant.productID.image} />
             </div>
 
             <div className="checkout-item__data">
-              <h3>{item.name}</h3>
-              <span>#{item.id}</span>
+              <h3>{item.variant.productID.name}</h3>
+              <span>#{item.variant._id}</span>
             </div>
           </div>
-          <h3>${item.price}</h3>
+          <h3>${item.variant.productID.price}</h3>
         </li>
       ))}
     </ul>
