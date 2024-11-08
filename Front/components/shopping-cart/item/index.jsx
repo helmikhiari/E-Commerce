@@ -1,13 +1,24 @@
 
+import { deleteItemFromCart } from 'APIS/user';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { deleteFromCart } from 'reducers/cartSlice';
 
 
 const ShoppingCart = ({ thumb, name, id, color, size, stock, price,qte }) => {
   const [quantity,setQuantity]=useState(qte);
   const plus=()=>setQuantity(++quantity)
   const minus=()=>setQuantity(--quantity);
-
+  const dispatch=useDispatch()
+  const handleDelete=async()=>
+  {
+    
+    const res=await deleteItemFromCart(id);
+    if (res)
+    {
+      dispatch(deleteFromCart(id));
+    }
+  }
 
   return (
     <tr>
@@ -37,7 +48,7 @@ const ShoppingCart = ({ thumb, name, id, color, size, stock, price,qte }) => {
         </div>
       </td>
       <td>${price}</td>
-      <td className="cart-item-cancel"><i className="icon-cancel"></i></td>
+      <td className="cart-item-cancel"><button onClick={handleDelete} className="icon-cancel"></button></td>
     </tr>
   )
 };

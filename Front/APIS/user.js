@@ -3,7 +3,7 @@ import Header from './../components/header/index';
 
 export async function login(email, password) {
     try {
-        const response = await axios.post("http://localhost:5000/auth/login", { email, password });
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/auth/login`, { email, password });
         if (response.status == 200) {
             return response.data;
         }
@@ -28,7 +28,7 @@ export async function getUser() {
             const headers = {
                 'Authorization': `Bearer ${token}`
             }
-            const response = await axios.get('http://localhost:5000/user/getuser', { headers })
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/user/getuser`, { headers })
             if (response.status == 200) {
                 return response.data;
             }
@@ -41,7 +41,7 @@ export async function getUser() {
 export async function register(data) {
     console.log(data);
     try {
-        const response = await axios.post('http://localhost:5000/user/register', data)
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/user/register`, data)
         if (response.status == 201) {
             return { success: "User Registered" };
         }
@@ -60,7 +60,7 @@ export async function register(data) {
 
 export async function forgotPassword(email) {
     try {
-        const respnse = await axios.post('http://localhost:5000/auth/forgetPassword', { email });
+        const respnse = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/auth/forgetPassword`, { email });
         if (respnse.status == 201) {
             return { success: "Link has been sent" }
         }
@@ -78,7 +78,7 @@ export async function resetPassword(tokenPass, newPassword) {
         const headers = {
             'Authorization': `Bearer ${tokenPass}`
         }
-        const response = await axios.post('http://localhost:5000/auth/resetPassword', { newPassword }, { headers })
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/auth/resetPassword`, { newPassword }, { headers })
         if (response.status == 201) {
             return { success: "Password Changed Successfully" };
         }
@@ -92,22 +92,36 @@ export async function resetPassword(tokenPass, newPassword) {
 }
 
 
-export async function purchase(promoCode)
-{
-    try 
-    {   const token=localStorage.getItem('token');
+export async function purchase(promoCode) {
+    try {
+        const token = localStorage.getItem('token');
         const headers = {
-        'Authorization': `Bearer ${token}`
-    }
-        const response=await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/user/purchase`,{promoCode},{headers})
-        if (response.status==201)
-        {
+            'Authorization': `Bearer ${token}`
+        }
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/user/purchase`, { promoCode }, { headers })
+        if (response.status == 201) {
             return true;
         }
 
-    } 
+    }
     catch (error) {
         console.log(error);
         return false
+    }
+}
+
+export async function deleteItemFromCart(userCartID) {
+    try {
+
+        const token = localStorage.getItem('token');
+
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        }
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE}/user/deleteFromCart/${userCartID}`, { headers })
+        if (response.status == 204)
+            return true;
+    } catch (error) {
+        return false;
     }
 }

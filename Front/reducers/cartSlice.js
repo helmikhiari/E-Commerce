@@ -20,7 +20,7 @@ const cartSlice = createSlice({
             state.totalPrice = action.payload;
         },
         deleteFromCart: (state, action) => {
-            state.cart = state.cart.filter(variant => variant._id != action.payload)
+            state.cart = state.cart.filter(v => v._id != action.payload)
         },
         plusQuantity: (state, action) => {
             const index = state.cart.findIndex((variant) => variant.variantID == action.payload);
